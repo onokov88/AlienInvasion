@@ -40,9 +40,12 @@ class AlienInvasion:
         """Starts the main loop for the game"""
         while True:
             self._check_events()
-            self.ship.update()
-            self._update_bullets()
-            self._update_aliens()
+
+            if self.stats.game_active:
+                self.ship.update()
+                self._update_bullets()
+                self._update_aliens()
+
             self._update_screen()
 
     def _check_events(self):
@@ -168,17 +171,20 @@ class AlienInvasion:
 
     def _ship_hit(self):
         """Respond to the ship being hit by an alien."""
-        # -1 life and clear the screen
-        self.stats.ships_left -= 1
-        self.aliens.empty()
-        self.bullets.empty()
+        if self.stats.ships_left > 0:
+            # -1 life and clear the screen
+            self.stats.ships_left -= 1
+            self.aliens.empty()
+            self.bullets.empty()
 
-        # Create a new fleet and re-center the ship
-        self._create_fleet()
-        self.ship.center_ship()
+            # Create a new fleet and re-center the ship
+            self._create_fleet()
+            self.ship.center_ship()
 
-        # Pause for some time so the player can get ready.
-        sleep(0.5)
+            # Pause for some time so the player can get ready.
+            sleep(0.5)
+        else:
+            self.stats.game_active = False
 
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen"""
